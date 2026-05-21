@@ -143,8 +143,8 @@ $env:PYTHONUTF8=1; .\venv\Scripts\python.exe utils/apply_magic_mult.py
 *(The final optimized ablation submission file will be saved directly inside the `post_process_submission/` directory as `post_process_submission/submission_x1.03.csv`).*
 
 > [!NOTE]
-> **Lưu ý quan trọng về môi trường chạy & Tính đồng nhất (Reproducibility):**
-> 1. **Cấu hình GPU mặc định**: Mặc định, pipeline được thiết lập để chạy LightGBM trên GPU (`"device": "gpu"`) nhằm tối ưu hóa thời gian huấn luyện trên tập dữ liệu lớn (~28 triệu dòng). Nếu muốn chạy trên CPU, bạn cần **điều chỉnh thủ công** trong cấu hình code.
-> 2. **Sự sai lệch kết quả giữa các lần chạy (Non-deterministic)**: Do đặc thù tính toán đa luồng song song (multi-threading) trên phần cứng GPU, các phép toán số thực song song có thể dẫn đến các sai số làm tròn cực kỳ nhỏ không thể tránh khỏi. Vì vậy, dù hệ thống đã cố định seed (`CONFIG["SEED"]` = 42), kết quả dự đoán (file CSV đầu ra) giữa các lần chạy khác nhau vẫn có thể có sự sai lệch nhỏ và không thể trùng khớp hoàn toàn 100%.
+> **Important Note on Execution Environment & Reproducibility:**
+> 1. **Default GPU Configuration**: By default, the pipeline is configured to run LightGBM on the GPU (`"device": "gpu"`) to optimize training execution speed over the massive dataset (~28 million rows). If you wish to execute the pipeline on the CPU, you must adjust the device parameter manually in the configuration dictionaries inside the code.
+> 2. **Result Variations Between Runs (Non-deterministic)**: Due to the highly parallelized multi-threading nature of GPU hardware computations, atomic floating-point summation operations can introduce minor, unavoidable rounding differences. Consequently, even though the system seeds are fixed (`CONFIG["SEED"]` = 42), the final forecast outputs (predicted CSV files) may exhibit extremely small variations between consecutive runs and will not be 100% byte-for-byte identical.
 
 
