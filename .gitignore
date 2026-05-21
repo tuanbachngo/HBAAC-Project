@@ -16,7 +16,6 @@ htmlcov/
 
 # Local datasets and model submissions (large files and competition raw datasets)
 hbaac-round2/
-*.csv
 *.zip
 *.tar.gz
 *.tgz
