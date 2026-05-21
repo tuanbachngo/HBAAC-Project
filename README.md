@@ -144,7 +144,7 @@ $env:PYTHONUTF8=1; .\venv\Scripts\python.exe utils/apply_magic_mult.py
 
 > [!NOTE]
 > **Lưu ý quan trọng về môi trường chạy & Tính đồng nhất (Reproducibility):**
-> 1. **Cấu hình GPU mặc định**: Mặc định, pipeline được thiết lập để chạy LightGBM trên GPU (`"device": "gpu"`) nhằm tối ưu hóa thời gian huấn luyện trên tập dữ liệu lớn (~28 triệu dòng). Nếu muốn chạy trên CPU, bạn cần điều chỉnh thủ công trong cấu hình code.
+> 1. **Cấu hình GPU mặc định**: Mặc định, pipeline được thiết lập để chạy LightGBM trên GPU (`"device": "gpu"`) nhằm tối ưu hóa thời gian huấn luyện trên tập dữ liệu lớn (~28 triệu dòng). Nếu muốn chạy trên CPU, bạn cần **điều chỉnh thủ công** trong cấu hình code.
 > 2. **Sự sai lệch kết quả giữa các lần chạy (Non-deterministic)**: Do đặc thù tính toán đa luồng song song (multi-threading) trên phần cứng GPU, các phép toán số thực song song có thể dẫn đến các sai số làm tròn cực kỳ nhỏ không thể tránh khỏi. Vì vậy, dù hệ thống đã cố định seed (`CONFIG["SEED"]` = 42), kết quả dự đoán (file CSV đầu ra) giữa các lần chạy khác nhau vẫn có thể có sự sai lệch nhỏ và không thể trùng khớp hoàn toàn 100%.
 
 
