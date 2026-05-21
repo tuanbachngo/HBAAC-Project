@@ -87,14 +87,14 @@ After running Step 2 and generating the baseline prediction at `output/submissio
      * **Distant Window (days -90 to -30)**: Evaluates whether the product had very low/sporadic transaction volume beforehand.
   2. **Dead SKU Identification**: If a product has had little to no sales activity in both windows (or had only minor transaction counts offset by large return quantities), it is flagged as "discontinued" or "inactive".
   3. **Zeroing Forecasts**: Sets the prediction values for these flagged dead SKUs to exactly `0.0` for all future periods (F1 to F28). This deactivation eliminates WRMSSE error inflation caused by machine learning models predicting random sales noise for inactive products.
-  4. **Output Location**: Saves the intermediate rule-zeroed prediction file directly to `post_process_submission/submission_experiment_new.csv`.
+  4. **Output Location**: Saves the intermediate rule-zeroed prediction file directly to `output/post_process_submission/submission_experiment_new.csv`.
 
 #### 📂 [apply_magic_mult.py](file:///c:/Users/Admin/OneDrive%20-%20National%20Economics%20University/Desktop/HBAAC/utils/apply_magic_mult.py) — Magic Multiplier
 * **How it works**:
-  1. Loads the rule-zeroed predictions from `post_process_submission/submission_experiment_new.csv`.
+  1. Loads the rule-zeroed predictions from `output/post_process_submission/submission_experiment_new.csv`.
   2. **Scales Active Predictions**: Multiplies all remaining non-zero forecasts by an optimal multiplier coefficient (e.g., `1.02` for main submission, or `1.03` for ablation study).
   3. **Safety Clipping**: Applies `.clip(lower=0.0)` and `.fillna(0.0)` to ensure multiplication never introduces negative values or NaNs.
-  4. **Output Location**: Saves the final boosted submission file directly to `post_process_submission/submission_x{MAGIC_MULT}.csv`.
+  4. **Output Location**: Saves the final boosted submission file directly to `output/post_process_submission/submission_x{MAGIC_MULT}.csv`.
   * *Scientific Rationale*: Due to standard RMSE loss functions tending to pull machine learning forecasts toward the mean (creating conservative predictions), multiplying active forecasts by a small constant factor (e.g. 1.02) helps match the skewed, right-tail nature of retail demand distributions and optimizes the score against the asymmetric loss properties of the WRMSSE metric.
 
 ---
@@ -123,7 +123,7 @@ $env:PYTHONUTF8=1; .\venv\Scripts\python.exe utils/apply_rule_zero_skus.py
 # 3. Apply Magic Multiplier (1.02)
 $env:PYTHONUTF8=1; .\venv\Scripts\python.exe utils/apply_magic_mult.py
 ```
-*(The final optimized submission file will be saved directly inside the `post_process_submission/` directory as `post_process_submission/submission_x1.02.csv`).*
+*(The final optimized submission file will be saved directly inside the `output/post_process_submission/` directory as `output/post_process_submission/submission_x1.02.csv`).*
 
 ### Scenario C: Ablation Study — Expecting Improvements through Three Models Ensemble Weight Optimization
 The ablation study explores alternative ensembling weights across the three machine learning models (LightGBM Tweedie, Poisson, and ETS) to maximize the WRMSSE metric optimization. 
@@ -140,7 +140,7 @@ $env:PYTHONUTF8=1; .\venv\Scripts\python.exe utils/apply_rule_zero_skus.py
 # 3. Apply Magic Multiplier (1.03 for Ablation)
 $env:PYTHONUTF8=1; .\venv\Scripts\python.exe utils/apply_magic_mult.py
 ```
-*(The final optimized ablation submission file will be saved directly inside the `post_process_submission/` directory as `post_process_submission/submission_x1.03.csv`).*
+*(The final optimized ablation submission file will be saved directly inside the `output/post_process_submission/` directory as `output/post_process_submission/submission_x1.03.csv`).*
 
 > [!NOTE]
 > **Important Note on Execution Environment & Reproducibility:**
