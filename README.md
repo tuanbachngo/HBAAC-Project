@@ -134,31 +134,8 @@ $env:PYTHONUTF8=1; .\venv\Scripts\python.exe utils/apply_magic_mult.py
 ```
 *(The final optimized submission file will be saved directly inside the `post_process_submission/` directory as `post_process_submission/submission_x1.02.csv` for the main run, and `post_process_submission/submission_x1.03.csv` for the ablation run).*
 
----
-
-## 4. GPU Execution & Reproducibility Note
-
 > [!NOTE]
-> **Non-Deterministic Behavior on GPU**: By default, this pipeline is configured to run LightGBM on the GPU (`"device": "gpu"`) with multi-threading enabled (`"n_jobs": -1`) to optimize training speed over the massive dataset (~28 million rows). 
-> 
-> Due to the highly parallelized nature of GPU training, atomic floating-point summation operations across thousands of concurrent GPU threads are subject to minor, non-associative rounding differences. Consequently, consecutive runs of the pipeline may yield extremely small variations in split thresholds, resulting in minor differences in the final predicted quantities. This is completely standard behavior for tree-based libraries running on GPU hardware.
+> **Lưu ý quan trọng về môi trường chạy & Tính đồng nhất (Reproducibility):**
+> 1. **Cấu hình GPU mặc định**: Mặc định, pipeline được thiết lập để chạy LightGBM trên GPU (`"device": "gpu"`) nhằm tối ưu hóa thời gian huấn luyện trên tập dữ liệu lớn (~28 triệu dòng). Nếu muốn chạy trên CPU, bạn cần điều chỉnh thủ công trong cấu hình code.
+> 2. **Sự sai lệch kết quả giữa các lần chạy (Non-deterministic)**: Do đặc thù tính toán đa luồng song song (multi-threading) trên phần cứng GPU, các phép toán số thực song song có thể dẫn đến các sai số làm tròn cực kỳ nhỏ không thể tránh khỏi. Vì vậy, dù hệ thống đã cố định seed (`CONFIG["SEED"]` = 42), kết quả dự đoán (file CSV đầu ra) giữa các lần chạy khác nhau vẫn có thể có sự sai lệch nhỏ và không thể trùng khớp hoàn toàn 100%.
 
-If your objective requires **100% byte-for-byte reproducibility** across multiple runs, you can enforce deterministic behavior by making the following adjustments in `src/step2_train.py` and `src/step2_train-ablation-study.py`:
-
-1. **Fix Python Hash Seed**:
-   Insert the following at the very top of your execution script before importing other libraries:
-   ```python
-   import os
-   os.environ['PYTHONHASHSEED'] = str(CONFIG["SEED"])
-   ```
-2. **Switch LightGBM to CPU Mode**:
-   Inside the `LGBM_BASE` configuration dictionary, change the device parameter from `"gpu"` to `"cpu"`:
-   ```python
-   "device": "cpu"
-   ```
-3. **Enforce Determinism in LightGBM**:
-   Add the `"deterministic": True` parameter to the `LGBM_BASE` configuration dictionary:
-   ```python
-   "deterministic": True
-   ```
-*(Note: Enforcing CPU-based deterministic training will significantly increase model execution time).*
